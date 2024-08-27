@@ -10,7 +10,7 @@ class CustomSearchBar extends StatelessWidget {
     return Container(
       width: screenWidth * 0.9,
       height: screenHeight * 0.06,
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+      padding: EdgeInsets.only(left: screenWidth * 0.02),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(screenWidth * 0.02),
         color: const Color(0xFF2E2E2F)
@@ -19,25 +19,32 @@ class CustomSearchBar extends StatelessWidget {
         children: [
           Expanded(
             child: TextFormField(
-              decoration: const InputDecoration(
-                icon: Icon(Icons.search),
-                label: Text('Search for a movie'),
+              decoration: InputDecoration(
+                icon: const Icon(Icons.search, color: Color(0xFFA5A5A5),),
+                hintText: 'Search for a movie',
+                hintStyle: TextStyle(
+                  color: const Color(0xFFA5A5A5),
+                  fontSize: screenWidth * 0.035
+                ),
                 border: InputBorder.none,
               ),
+              style: const TextStyle(color: Color(0xFFA5A5A5)),
             ),
           ),
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
+              fixedSize: Size.fromHeight(screenHeight * 0.9),
               backgroundColor: const Color(0xFF4B4B4B),
               foregroundColor: const Color(0xFFC7C5B1),
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(topRight: Radius.circular(screenWidth * 0.02),  bottomRight: Radius.circular(screenWidth * 0.02)),
+                // borderRadius: BorderRadius.zero
               )
             ),
             child: Text(
               'Search',
-              style: TextStyle(fontSize: screenWidth * 0.04),
+              style: TextStyle(fontSize: screenWidth * 0.035),
             )
           )
         ],

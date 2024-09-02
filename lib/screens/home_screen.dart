@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:movie_wish_list/widgets/custom_search_bar.dart';
-import 'package:movie_wish_list/widgets/movie_card.dart';
+import 'package:movie_wish_list/widgets/movie_list.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+
+
     return Scaffold(
       backgroundColor: const Color(0xff121212),
       body: Column(
@@ -48,59 +52,16 @@ class HomeScreen extends StatelessWidget {
                 Positioned(
                   bottom: screenHeight * 0.01,
                   left: screenWidth * 0.05,
-                  child: const CustomSearchBar()
+                  child: CustomSearchBar(
+                    onSearch: (query) {
+
+                    },
+                  )
                 )
               ],
             ),
           ),
-          const Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  MovieCard(
-                    title: 'Blade Runner',
-                    rating: 8.1,
-                    imagePath: 'assets/images/bladerunner.jpg',
-                    duration: 116,
-                    categories: ['Drama', 'Mystery', 'Sci-fi'],
-                    description: 'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-                  ),
-                  MovieCard(
-                    title: 'Blade Runner',
-                    rating: 8.1,
-                    imagePath: 'assets/images/bladerunner.jpg',
-                    duration: 116,
-                    categories: ['Drama', 'Mystery', 'Sci-fi'],
-                    description: 'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-                  ),
-                  MovieCard(
-                    title: 'Blade Runner',
-                    rating: 8.1,
-                    imagePath: 'assets/images/bladerunner.jpg',
-                    duration: 116,
-                    categories: ['Drama', 'Mystery', 'Sci-fi'],
-                    description: 'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-                  ),
-                  MovieCard(
-                    title: 'Blade Runner',
-                    rating: 8.1,
-                    imagePath: 'assets/images/bladerunner.jpg',
-                    duration: 116,
-                    categories: ['Drama', 'Mystery', 'Sci-fi'],
-                    description: 'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-                  ),
-                  MovieCard(
-                    title: 'Blade Runner',
-                    rating: 8.1,
-                    imagePath: 'assets/images/bladerunner.jpg',
-                    duration: 116,
-                    categories: ['Drama', 'Mystery', 'Sci-fi'],
-                    description: 'A blade runner must pursue and terminate four replicants who stole a ship in space, and have returned to Earth to find their creator.',
-                  ),
-                ],
-              ),
-            ),
-          )
+          
         ],
       ),
     );

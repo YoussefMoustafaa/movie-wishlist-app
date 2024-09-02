@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomSearchBar extends StatelessWidget {
-  const CustomSearchBar({super.key});
+
+  final Function(String) onSearch;
+  final TextEditingController _controller = TextEditingController();
+
+  CustomSearchBar({
+    super.key,
+    required this.onSearch
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +26,7 @@ class CustomSearchBar extends StatelessWidget {
         children: [
           Expanded(
             child: TextFormField(
+              controller: _controller,
               decoration: InputDecoration(
                 icon: const Icon(Icons.search, color: Color(0xFFA5A5A5),),
                 hintText: 'Search for a movie',
@@ -32,14 +40,15 @@ class CustomSearchBar extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              onSearch(_controller.text);
+            },
             style: ElevatedButton.styleFrom(
               fixedSize: Size.fromHeight(screenHeight * 0.9),
               backgroundColor: const Color(0xFF4B4B4B),
               foregroundColor: const Color(0xFFC7C5B1),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(topRight: Radius.circular(screenWidth * 0.02),  bottomRight: Radius.circular(screenWidth * 0.02)),
-                // borderRadius: BorderRadius.zero
               )
             ),
             child: Text(

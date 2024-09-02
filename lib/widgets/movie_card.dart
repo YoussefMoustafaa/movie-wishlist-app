@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class MovieCard extends StatelessWidget {
   const MovieCard({
     super.key,
     required this.title,
     required this.rating,
-    required this.imagePath,
+    required this.poster,
     required this.duration,
     required this.categories,
     required this.description
   });
 
   final String title;
-  final double rating;
-  final String imagePath;
-  final int duration;
+  final String rating;
+  final String poster;
+  final String duration;
   final List<String> categories;
   final String description;
 
@@ -38,8 +37,8 @@ class MovieCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Image.asset(
-            imagePath,
+          Image.network(
+            poster,
             height: screenHeight * 0.22,
           ),
           SizedBox(width: screenWidth * 0.03,),

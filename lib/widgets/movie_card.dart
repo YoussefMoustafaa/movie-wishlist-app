@@ -23,7 +23,8 @@ class MovieCard extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    String genres = '${categories[0]}, ${categories[1]}';
+    List<String> genresList = categories.length >= 2 ? categories.sublist(0, 2) : categories.sublist(0, categories.length);
+    String genres = genresList.join(', ');
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
@@ -40,19 +41,30 @@ class MovieCard extends StatelessWidget {
           Image.network(
             poster,
             height: screenHeight * 0.22,
+            errorBuilder: (context, error, stackTrace) {
+              // Fallback to image-not-available if the URL fails
+              return Image.asset(
+                'assets/images/image-not-available.jpeg',
+                height: screenHeight * 0.22,
+              );
+            },
           ),
           SizedBox(width: screenWidth * 0.03,),
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(          // first row
+                Row( 
+                  mainAxisAlignment: MainAxisAlignment.start,         // first row
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                        color: Colors.white
+                    Expanded(
+                      child: Text(
+                        title,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          color: Colors.white
+                        ),
                       ),
                     ),
                     SizedBox(width: screenWidth * 0.015,),
@@ -61,10 +73,11 @@ class MovieCard extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.008,),
-                Row(      // second row
+                Row(           // second row
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '$duration min',
+                      duration,
                       style: const TextStyle(color: Colors.white),
                     ),
                     SizedBox(width: screenWidth * 0.018,),
@@ -73,15 +86,23 @@ class MovieCard extends StatelessWidget {
                       style: const TextStyle(color: Colors.white),
                     ),
                     SizedBox(width: screenWidth * 0.018,),
-                    const Icon(Icons.add_circle, color:Colors.white),
-                    SizedBox(width: screenWidth * 0.005,),
-                    const Text('Watchlist', style: TextStyle(color: Colors.white),)
+                    Row(
+                      children: [
+                        const Icon(Icons.add_circle, color:Colors.white),
+                        SizedBox(width: screenWidth * 0.005,),
+                        const Text('Watchlist', style: TextStyle(color: Colors.white),)
+                      ],
+                    )
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.008,),
-                Text(
-                  description,
-                  style: TextStyle(fontSize: screenWidth * 0.03, color: const Color(0xFFA5A5A5)),
+                Flexible(
+                  child: Text(
+                    description,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: screenWidth * 0.03, color: const Color(0xFFA5A5A5)),
+                  ),
                 )
               ],
             )

@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_wish_list/providers/movies_provider.dart';
 
-class CustomSearchBar extends StatelessWidget {
+class CustomSearchBar extends ConsumerWidget {
 
-  final Function(String) onSearch;
   final TextEditingController _controller = TextEditingController();
 
   CustomSearchBar({
     super.key,
-    required this.onSearch
     });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+
+
+    void handleSearch() {
+      final String query = _controller.text.trim();
+
+      if (query.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please enter a movie name')
+          )
+        );
+      } else {
+        ref.read(movieNotifierProvider.notifier).fetchMovies(query);
+      }
+    }
+
+
     return Container(
       width: screenWidth * 0.9,
       height: screenHeight * 0.06,
@@ -40,9 +57,7 @@ class CustomSearchBar extends StatelessWidget {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              onSearch(_controller.text);
-            },
+            onPressed: handleSearch,
             style: ElevatedButton.styleFrom(
               fixedSize: Size.fromHeight(screenHeight * 0.9),
               backgroundColor: const Color(0xFF4B4B4B),

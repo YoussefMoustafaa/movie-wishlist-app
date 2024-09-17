@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_wish_list/widgets/custom_search_bar.dart';
 import 'package:movie_wish_list/widgets/movie_list.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
 
     double screenWidth = MediaQuery.of(context).size.width;
@@ -52,16 +53,12 @@ class HomeScreen extends StatelessWidget {
                 Positioned(
                   bottom: screenHeight * 0.01,
                   left: screenWidth * 0.05,
-                  child: CustomSearchBar(
-                    onSearch: (query) {
-
-                    },
-                  )
+                  child: CustomSearchBar()
                 )
               ],
             ),
           ),
-          
+          const MovieList(),
         ],
       ),
     );

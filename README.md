@@ -9,40 +9,40 @@ A sleek and intuitive Flutter application designed to help users search for movi
 
 ### 🎥 Detailed Movie Information
 
-    Each movie card displays:
-        Poster
-        Title
-        IMDb rating
-        Duration
-        Genre categories
-        A brief plot description
+Each movie card displays:
+    * Poster
+    * Title
+    * IMDb rating
+    * Duration
+    * Genre categories
+    * A brief plot description
 
 ### 📜 Personal Watchlist
 
-    Easily access and manage your movie watchlist directly from the app's home screen.
+Easily access and manage your movie watchlist directly from the app's home screen.
 
 ### 🌟 Cool Loading Animations
 
-    Beautiful Lottie animations while fetching movie data, ensuring a smooth and enjoyable experience.
+Beautiful Lottie animations while fetching movie data, ensuring a smooth and enjoyable experience.
 
 ### 🛠️ State Management with Riverpod
 
-    StateNotifier is used to handle the movie search logic efficiently, making the app highly responsive.
-    Clean separation of concerns between UI, state management, and data fetching.
+* StateNotifier is used to handle the movie search logic efficiently, making the app highly responsive.
+* Clean separation of concerns between UI, state management, and data fetching.
 
 ## 📱 Technologies Used
 
-    Flutter: Frontend framework for building modern and responsive mobile apps.
-    Riverpod: State management solution for handling app states efficiently.
-    OMDb API: Source for movie information.
-    Lottie: For smooth and eye-catching animations.
+* Flutter: Frontend framework for building modern and responsive mobile apps.
+* Riverpod: State management solution for handling app states efficiently.
+* OMDb API: Source for movie information.
+* Lottie: For smooth and eye-catching animations.
 
 ## 💡 Why This Project Stands Out
 
 This app demonstrates:
 
-    Strong UI/UX Design: A visually appealing interface that provides an intuitive user experience.
-    Advanced State Management: Integration of Riverpod's StateNotifier for clean and scalable state management.
-    API Integration: Seamless communication with an external movie API.
-    Reusable Components: Modular widget structure for easy extensibility and maintainability.
-    Modern Animations: Use of Lottie to improve user engagement.
+* Strong UI/UX Design: A visually appealing interface that provides an intuitive user experience.
+* Advanced State Management: Integration of Riverpod's StateNotifier for clean and scalable state management.
+* API Integration: Seamless communication with an external movie API.
+* Reusable Components: Modular widget structure for easy extensibility and maintainability.
+* Modern Animations: Use of Lottie to improve user engagement.

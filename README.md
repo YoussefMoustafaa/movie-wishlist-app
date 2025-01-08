@@ -4,8 +4,8 @@ A sleek and intuitive Flutter application designed to help users search for movi
 ## 🚀 Features
 ### 🕵️‍♂️ Movie Search
 
-    Type a movie name in the search bar to instantly fetch results from the OMDb database.
-    Real-time search functionality powered by a custom search bar widget.
+* Type a movie name in the search bar to instantly fetch results from the OMDb database.
+* Real-time search functionality powered by a custom search bar widget.
 
 ### 🎥 Detailed Movie Information
 

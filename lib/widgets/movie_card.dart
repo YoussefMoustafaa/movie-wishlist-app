@@ -69,7 +69,7 @@ class MovieCard extends StatelessWidget {
                     ),
                     SizedBox(width: screenWidth * 0.015,),
                     const Icon(Icons.star_rounded, color: Colors.amber,),
-                    const Text('8.1', style: TextStyle(color: Colors.white),)
+                    Text(rating, style: const TextStyle(color: Colors.white),)
                   ],
                 ),
                 SizedBox(height: screenHeight * 0.008,),

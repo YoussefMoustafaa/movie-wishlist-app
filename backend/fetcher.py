@@ -2,9 +2,24 @@ import requests
 from sqlalchemy.orm import Session
 from models import Movie
 from schemas import MovieCreate
-from simplejustwatchapi.justwatch import search
+from simplejustwatchapi.justwatch import search, details
 
 API_KEY = ""
+
+
+def fetch_api_movies(query: str):
+    try:
+        results = search(query, "eg", "en")
+
+        if results:
+            return results
+        else:
+            print("No Movies Found!")
+            return []
+    except requests.RequestException as e:
+        print(f"Error fetching movies: {e}")
+        return []
+
 
 def fetch_and_save_movies(query: str, db: Session):
     # search_url = f"https://www.omdbapi.com/?apikey={API_KEY}&s={query}"

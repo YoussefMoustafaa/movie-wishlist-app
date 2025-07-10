@@ -1,12 +1,17 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
+from enum import Enum
 
+
+class ContentType(str, Enum):
+    movie = "movie"
+    series = "series"
 
 class PlatformBase(BaseModel):
     platform_name: str
     monetization_type: str
     stream_quality: str
-    price: str
+    price: int
     price_currency: str
     icon_url: str
     link_url: str
@@ -24,13 +29,15 @@ class Interactions(BaseModel):
 class MovieBase(BaseModel):
     title: str
     description: str
-    year: str
+    year: int
+    runtime: int
     poster: str
-    backdrops: List[str]
-    runtime: str
+    pictures: List[str]
     imdb_id: str
-    rating: str
+    rating: float
     genres: List[str]
+    type: ContentType = ContentType.movie
+    number_of_seasons: Optional[int] = None
 
 
 class MovieCreate(MovieBase):

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
-from models import Movie, Platform
+from models import Movie, Platform, ContentType, MoviePlatformLink
 from schemas import MovieOut, MovieCreate
 from fetcher import fetch_and_save_movies, fetch_api_movies
 from typing import List
@@ -49,49 +49,73 @@ def search_fresh(query: str, db: Session = Depends(get_db)):
 
     external_movies = fetch_api_movies(query)
 
-    new_movies = []
-
     for ext in external_movies:
         if ext.imdb_id in existing_ids:
             continue
 
-        platforms = []
-
-        ext.offers[0]
-
-        # TODO price is int and price_value is string, handle that
-        for offer in ext.offers:
-            platform = Platform(
-                platform_name=offer.package.name,
-                monetization_type=offer.monetization_type,
-                stream_quality=offer.presentation_type,
-                price=int(offer.price_value),
-                price_currency=offer.price_currency,
-                icon_url=offer.package.icon,
-                link_url=offer.url
-            )
 
         numOfSeasons = None
+        content_type = ContentType.movie
         if ext.object_type == "SHOW":
+            content_type = ContentType.series
+        if ext.offers:
             numOfSeasons = ext.offers[0].element_count
 
-        new_movie = Movie(
+
+        movie = Movie(
             imdb_id=ext.imdb_id,
             title=ext.title,
             description=ext.short_description,
-            runtime=ext.runtime_minutes,
+            runtime=int(ext.runtime_minutes),
             poster=ext.poster,
             backdrops=ext.backdrops,
             genres=ext.genres,
-            rating=ext.scoring.imdb_score,
-            year=ext.release_year,
+            rating=float(ext.scoring.imdb_score),
+            year=int(ext.release_year),
             interactions={
-                "likes": ext.interactions.likes if ext.interactions else 0,
-                "dislikes": ext.interactions.dislikes if ext.interactions else 0
+                "likes": int(ext.interactions.likes) if ext.interactions else 0,
+                "dislikes": int(ext.interactions.dislikes) if ext.interactions else 0
             },
-            type=ext.object_type,
-            number_of_seasons=numOfSeasons
+            type=content_type,
+            number_of_seasons=numOfSeasons,
         )
+        db.add(movie)
+        db.flush()
+
+
+        for offer in ext.offers:
+            platform = None
+            existing_platform = db.query(Platform).filter_by(platform_name=offer.package.name).first()
+            if existing_platform:
+                platform = existing_platform
+            else:
+                platform = Platform(
+                    platform_name=offer.package.name,
+                    monetization_type=offer.monetization_type,
+                    stream_quality=offer.presentation_type,
+                    price=int(offer.price_value),
+                    price_currency=offer.price_currency,
+                    icon_url=offer.package.icon,
+                )
+                db.add(platform)
+                db.flush()
+            
+
+            existing_link = db.query(MoviePlatformLink).filter_by(
+                movie_id=movie.id,
+                platform_id=platform.id,
+            ).first()
+
+            if not existing_link:
+                link = MoviePlatformLink(
+                    movie=movie,
+                    platform=platform,
+                    link_url=offer.url
+                )
+                db.add(link)
+                db.flush()
+
+    db.commit()
 
 
 # @app.post("/movies", response_model=MovieOut)

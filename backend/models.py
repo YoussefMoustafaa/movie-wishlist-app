@@ -5,16 +5,10 @@ import enum
 
 
 class ContentType(enum.Enum):
-    movie = "movie"
-    series = "series"
+    movie = "Movie"
+    series = "Series"
 
 
-movie_platform_table = Table(
-    "movie_platform", 
-    Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id")),
-    Column("platform_id", Integer, ForeignKey("platforms.id"))
-)
 
 class Movie(Base):
     __tablename__ = "movies"
@@ -33,7 +27,7 @@ class Movie(Base):
     type = Column(Enum(ContentType), default=ContentType.movie)
     number_of_seasons = Column(Integer, nullable=True)
 
-    platforms = relationship("Platform", secondary=movie_platform_table, back_populates="movies")
+    platform_links = relationship("MoviePlatformLink", back_populates="movie")
 
 
 class Platform(Base):
@@ -46,6 +40,17 @@ class Platform(Base):
     price = Column(Integer)
     price_currency = Column(String)
     icon_url = String(String)
-    link_url = String(String)
 
-    movies = relationship("Movie", secondary=movie_platform_table, back_populates="platforms")
+    movie_links = relationship("MoviePlatformLink", back_populates="platform")
+
+
+class MoviePlatformLink(Base):
+    __tablename__ = "movie_platform_links"
+
+    id = Column(Integer, primary_key=True)
+    movie_id = Column(Integer, ForeignKey("movies.id"))
+    platform_id = Column(Integer, ForeignKey("platforms.id"))
+    link_url = Column(String)
+
+    movie = relationship("Movie", back_populates="platform_links")
+    platform = relationship("Platform", back_populates="movie_links")

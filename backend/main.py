@@ -3,13 +3,36 @@ from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
 from models import Movie, Platform, ContentType, MoviePlatformLink
 from schemas import MovieOut, MovieCreate
-from fetcher import fetch_and_save_movies, fetch_api_movies
+from fetcher import fetch_and_save_movies, fetch_and_store_new_movies
 from typing import List
+from apscheduler.schedulers.background import BackgroundScheduler
+from contextlib import asynccontextmanager
+
+
+scheduler = BackgroundScheduler()
+
+def fetch_daily_movies_job():
+    db = SessionLocal()
+    try:
+        fetch_and_save_movies(db)
+    except Exception as e:
+        print(f"Error in scheduled job: {e}")
+    finally:
+        db.close()
+
+scheduler.add_job(fetch_daily_movies_job, 'cron', hour=3, minute=0)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler.start()
+    yield
+    scheduler.shutdown()
 
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 
 def get_db():
@@ -42,80 +65,7 @@ def search_cached(query: str, db: Session = Depends(get_db)):
 
 @app.get("/search/fresh", response_model=List[MovieOut])
 def search_fresh(query: str, db: Session = Depends(get_db)):
-    query = query.strip().lower()
-
-    existing_movies = db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
-    existing_ids = {movie.imdb_id for movie in existing_movies}
-
-    external_movies = fetch_api_movies(query)
-
-    for ext in external_movies:
-        if ext.imdb_id in existing_ids:
-            continue
-
-
-        numOfSeasons = None
-        content_type = ContentType.movie
-        if ext.object_type == "SHOW":
-            content_type = ContentType.series
-        if ext.offers:
-            numOfSeasons = ext.offers[0].element_count
-
-
-        movie = Movie(
-            imdb_id=ext.imdb_id,
-            title=ext.title,
-            description=ext.short_description,
-            runtime=int(ext.runtime_minutes),
-            poster=ext.poster,
-            backdrops=ext.backdrops,
-            genres=ext.genres,
-            rating=float(ext.scoring.imdb_score),
-            year=int(ext.release_year),
-            interactions={
-                "likes": int(ext.interactions.likes) if ext.interactions else 0,
-                "dislikes": int(ext.interactions.dislikes) if ext.interactions else 0
-            },
-            type=content_type,
-            number_of_seasons=numOfSeasons,
-        )
-        db.add(movie)
-        db.flush()
-
-
-        for offer in ext.offers:
-            platform = None
-            existing_platform = db.query(Platform).filter_by(platform_name=offer.package.name).first()
-            if existing_platform:
-                platform = existing_platform
-            else:
-                platform = Platform(
-                    platform_name=offer.package.name,
-                    monetization_type=offer.monetization_type,
-                    stream_quality=offer.presentation_type,
-                    price=int(offer.price_value),
-                    price_currency=offer.price_currency,
-                    icon_url=offer.package.icon,
-                )
-                db.add(platform)
-                db.flush()
-            
-
-            existing_link = db.query(MoviePlatformLink).filter_by(
-                movie_id=movie.id,
-                platform_id=platform.id,
-            ).first()
-
-            if not existing_link:
-                link = MoviePlatformLink(
-                    movie=movie,
-                    platform=platform,
-                    link_url=offer.url
-                )
-                db.add(link)
-                db.flush()
-
-    db.commit()
+    return fetch_and_store_new_movies(query, db)
 
 
 # @app.post("/movies", response_model=MovieOut)
@@ -159,3 +109,7 @@ def get_movies_by_platform(platform_name : str, db : Session = Depends(get_db)):
         .filter(Platform.platform_name == platform_name)
         .all()
     )
+
+
+
+scheduler.start()

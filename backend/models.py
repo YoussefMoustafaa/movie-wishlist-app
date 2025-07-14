@@ -6,7 +6,7 @@ import enum
 
 class ContentType(enum.Enum):
     movie = "Movie"
-    series = "Series"
+    series = "Show"
 
 
 
@@ -39,7 +39,7 @@ class Platform(Base):
     stream_quality = Column(String)
     price = Column(Integer)
     price_currency = Column(String)
-    icon_url = String(String)
+    icon_url = Column(String)
 
     movie_links = relationship("MoviePlatformLink", back_populates="platform")
 

@@ -1,4 +1,5 @@
 import requests
+import ast
 from sqlalchemy.orm import Session
 from models import Movie, Platform, MoviePlatformLink, ContentType
 from schemas import MovieCreate
@@ -35,11 +36,13 @@ def fetch_and_store_new_movies(query: str, db: Session):
 
 
         numOfSeasons = None
-        content_type = ContentType.movie
         if ext.object_type == "SHOW":
             content_type = ContentType.series
+        else:
+            content_type = ContentType.movie
         if ext.offers:
             numOfSeasons = ext.offers[0].element_count
+
 
 
         movie = Movie(
@@ -48,8 +51,8 @@ def fetch_and_store_new_movies(query: str, db: Session):
             description=ext.short_description,
             runtime=int(ext.runtime_minutes),
             poster=ext.poster,
-            backdrops=ext.backdrops,
-            genres=ext.genres,
+            pictures=ext.backdrops if ext.backdrops else [],
+            genres=ext.genres if ext.genres else [],
             rating=float(ext.scoring.imdb_score),
             year=int(ext.release_year),
             interactions={
@@ -64,18 +67,16 @@ def fetch_and_store_new_movies(query: str, db: Session):
 
 
         for offer in ext.offers:
-            platform = None
-            existing_platform = db.query(Platform).filter_by(platform_name=offer.package.name).first()
-            if existing_platform:
-                platform = existing_platform
-            else:
+            platform = db.query(Platform).filter_by(platform_name=offer.package.name).first()
+            
+            if not platform:
                 platform = Platform(
                     platform_name=offer.package.name,
                     monetization_type=offer.monetization_type,
                     stream_quality=offer.presentation_type,
-                    price=int(offer.price_value),
+                    price=int(offer.price_value) if offer.price_value else None,
                     price_currency=offer.price_currency,
-                    icon_url=offer.package.icon,
+                    icon_url=str(offer.package.icon),
                 )
                 db.add(platform)
                 db.flush()
@@ -96,6 +97,14 @@ def fetch_and_store_new_movies(query: str, db: Session):
                 db.flush()
 
     db.commit()
+    
+    return db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
+
+
+def fetch_movies_from_db(query: str, db: Session):
+    query = query.strip().lower()
+    return db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
+
 
 
 def fetch_and_save_movies(query: str, db: Session):

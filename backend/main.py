@@ -2,8 +2,8 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
 from models import Movie, Platform, ContentType, MoviePlatformLink
-from schemas import MovieOut, MovieCreate
-from fetcher import fetch_and_save_movies, fetch_and_store_new_movies
+from schemas import MovieOut, MovieCreate, PlatformOut
+from fetcher import fetch_and_save_movies, fetch_and_store_new_movies, fetch_movies_from_db
 from typing import List
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
@@ -49,12 +49,12 @@ def fetch_movies(query: str, db: Session = Depends(get_db)):
     # return {'message': "Movies fetched and stored successfully"}
 
 
-@app.get("/movies", response_model=list[MovieOut])
-def get_movies(db: Session = Depends(get_db)):
-    return db.query(Movie).all()
+# @app.get("/movies", response_model=list[MovieOut])
+# def get_movies(db: Session = Depends(get_db)):
+#     return db.query(Movie).all()
 
 
-@app.get("/search", response_model=List[MovieOut])
+@app.get("/movies", response_model=List[MovieOut])
 def search_cached(query: str, db: Session = Depends(get_db)):
     query = query.strip().lower()
 
@@ -63,9 +63,32 @@ def search_cached(query: str, db: Session = Depends(get_db)):
     return db_results
 
 
-@app.get("/search/fresh", response_model=List[MovieOut])
+@app.get("/movies/fresh", response_model=List[MovieOut])
 def search_fresh(query: str, db: Session = Depends(get_db)):
     return fetch_and_store_new_movies(query, db)
+
+
+@app.get("/movies/", response_model=MovieOut)
+def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
+    movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    if not movie:
+        return {"error": "Movie not found"}
+    return movie
+
+
+@app.get("/platforms", response_model=List[PlatformOut])
+def get_platforms(db: Session = Depends(get_db)):
+    return db.query(Platform).all()
+
+
+@app.get("/search", response_model=List[MovieOut])
+def search_movies(query: str, db: Session = Depends(get_db)):
+    return fetch_and_store_new_movies(query, db)
+
+
+@app.get("/fetch_db", response_model=List[MovieOut])
+def get_movies_from_db(query: str, db: Session = Depends(get_db)):
+    return fetch_movies_from_db(query, db)
 
 
 # @app.post("/movies", response_model=MovieOut)
@@ -109,7 +132,3 @@ def get_movies_by_platform(platform_name : str, db : Session = Depends(get_db)):
         .filter(Platform.platform_name == platform_name)
         .all()
     )
-
-
-
-scheduler.start()

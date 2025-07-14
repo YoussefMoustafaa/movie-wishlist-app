@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from enum import Enum
 
@@ -56,11 +56,26 @@ class MovieBase(BaseModel):
     pictures: Optional[List[str]] = None
     imdb_id: Optional[str] = None
     rating: Optional[float] = None  # max 9.9
-    genres: Optional[List[str]]
+    genres: Optional[List[str]] = None
     interactions: Optional[Interactions] = None
     type: ContentType = ContentType.movie
     number_of_seasons: Optional[int] = None
     platform_links: List[MoviePlatformLinkOut] = Field(default_factory=list)
+
+
+    @field_validator("pictures", mode="before")
+    @classmethod
+    def parse_pictures(cls, value):
+        if isinstance(value, str) and value.startswith("{") and value.endswith("}"):
+            return value.strip("{}").split(",")
+        return value
+
+    @field_validator("genres", mode="before")
+    @classmethod
+    def parse_genres(cls, value):
+        if isinstance(value, str) and value.startswith("{") and value.endswith("}"):
+            return value.strip("{}").split(",")
+        return value
 
 
 class MovieCreate(MovieBase):
@@ -71,6 +86,7 @@ class MovieOut(MovieBase):
     id: int
     class Config:
         orm_mode = True
+        use_enum_values = True
 
 
 class PlatformMovieLinkOut(BaseModel):

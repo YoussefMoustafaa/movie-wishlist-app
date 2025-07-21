@@ -39,44 +39,14 @@ class MovieNotifier extends StateNotifier<MovieState> {
 
     state = state.copyWith(isLoading: true);
 
-    String searchUrl = 'https://www.omdbapi.com/?apikey=$apiKey&s=$query';
+    String searchUrl = 'http://192.168.1.12:8000/search?query=$query';
     final searchResponse = await http.get(Uri.parse(searchUrl));
 
     if (searchResponse.statusCode == 200) {
-      final searchData = json.decode(searchResponse.body);
-      List searchResults = searchData['Search'];
+      
+      List searchResults = json.decode(searchResponse.body);
 
-      List<Movie> tempMovies = [];
-      for (var movie in searchResults) {
-        String moveiId = movie['imdbID'];
-        String movieDetailsUrl = 'https://www.omdbapi.com/?apikey=$apiKey&i=$moveiId';
-        final movieDetailsResponse = await http.get(Uri.parse(movieDetailsUrl));
-
-        if (movieDetailsResponse.statusCode == 200) {
-          final movieDetailsData = json.decode(movieDetailsResponse.body);
-          Movie m = Movie(
-            id: movieDetailsData['imdbID'],
-            title: movieDetailsData['Title'],
-            year: movieDetailsData['Year'],
-            poster: movieDetailsData['Poster'],
-            releaseDate: movieDetailsData['Released'],
-            duration: movieDetailsData['Runtime'],
-            genre: movieDetailsData['Genre'],
-            director: movieDetailsData['Director'],
-            writer: movieDetailsData['Writer'],
-            actors: movieDetailsData['Actors'],
-            plot: movieDetailsData['Plot'],
-            language: movieDetailsData['Language'],
-            country: movieDetailsData['Country'],
-            awards: movieDetailsData['Awards'],
-            rating: movieDetailsData['imdbRating'],
-            type: movieDetailsData['Type']
-          );
-
-          tempMovies.add(m);
-
-        }
-      }
+      List<Movie> tempMovies = searchResults.map((json) => Movie.fromJson(json)).toList();
 
       state = state.copyWith(movies: tempMovies, isLoading: false);
     } else {

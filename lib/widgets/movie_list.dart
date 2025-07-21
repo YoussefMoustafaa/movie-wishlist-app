@@ -66,7 +66,7 @@ class _MovieListState extends ConsumerState<MovieList> {
             poster: movie.poster,
             duration: movie.duration,
             categories: movie.genresList,
-            description: movie.plot,
+            description: movie.description,
           );
           },
         )

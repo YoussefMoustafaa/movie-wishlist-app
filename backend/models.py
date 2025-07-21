@@ -37,7 +37,7 @@ class Platform(Base):
     platform_name = Column(String)
     monetization_type = Column(String)
     stream_quality = Column(String)
-    price = Column(Integer)
+    price = Column(Integer)     # make it double
     price_currency = Column(String)
     icon_url = Column(String)
 

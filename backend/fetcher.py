@@ -53,7 +53,7 @@ def fetch_and_store_new_movies(query: str, db: Session):
             poster=ext.poster,
             pictures=ext.backdrops if ext.backdrops else [],
             genres=ext.genres if ext.genres else [],
-            rating=float(ext.scoring.imdb_score),
+            rating=float(ext.scoring.imdb_score) if ext.scoring.imdb_score else 0.0,
             year=int(ext.release_year),
             interactions={
                 "likes": int(ext.interactions.likes) if ext.interactions else 0,

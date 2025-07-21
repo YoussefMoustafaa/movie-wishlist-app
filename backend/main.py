@@ -7,6 +7,7 @@ from fetcher import fetch_and_save_movies, fetch_and_store_new_movies, fetch_mov
 from typing import List
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
 
 
 scheduler = BackgroundScheduler()
@@ -33,6 +34,15 @@ async def lifespan(app: FastAPI):
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(lifespan=lifespan)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["127.0.0.1"],  # or specify your Flutter IP
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_db():

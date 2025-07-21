@@ -53,7 +53,7 @@ class HomeScreen extends ConsumerWidget {
                 Positioned(
                   bottom: screenHeight * 0.01,
                   left: screenWidth * 0.05,
-                  child: CustomSearchBar()
+                  child: MovieSearchBar()
                 )
               ],
             ),

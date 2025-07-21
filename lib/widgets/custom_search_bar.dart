@@ -2,19 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_wish_list/providers/movies_provider.dart';
 
-class CustomSearchBar extends ConsumerWidget {
+class MovieSearchBar extends ConsumerStatefulWidget {
 
-  final TextEditingController _controller = TextEditingController();
 
-  CustomSearchBar({
+  const MovieSearchBar({
     super.key,
     });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MovieSearchBar> createState() => _MovieSearchBarState();
+
+}
+
+
+class _MovieSearchBarState extends ConsumerState<MovieSearchBar> {
+
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller.addListener(() {
+      final query = _controller.text;
+      if (query.isNotEmpty) {
+        ref.read(movieNotifierProvider.notifier).fetchMovies(query);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
 
     void handleSearch() {
       final String query = _controller.text.trim();
@@ -29,7 +55,6 @@ class CustomSearchBar extends ConsumerWidget {
         ref.read(movieNotifierProvider.notifier).fetchMovies(query);
       }
     }
-
 
     return Container(
       width: screenWidth * 0.9,
@@ -75,4 +100,5 @@ class CustomSearchBar extends ConsumerWidget {
       )
     );
   }
+
 }

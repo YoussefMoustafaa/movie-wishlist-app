@@ -39,7 +39,7 @@ class MovieNotifier extends StateNotifier<MovieState> {
 
     state = state.copyWith(isLoading: true);
 
-    String searchUrl = 'http://192.168.1.12:8000/search?query=$query';
+    String searchUrl = 'http://192.168.1.12:8000/movies?query=$query';
     final searchResponse = await http.get(Uri.parse(searchUrl));
 
     if (searchResponse.statusCode == 200) {

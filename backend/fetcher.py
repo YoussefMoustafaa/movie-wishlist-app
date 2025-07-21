@@ -72,10 +72,6 @@ def fetch_and_store_new_movies(query: str, db: Session):
             if not platform:
                 platform = Platform(
                     platform_name=offer.package.name,
-                    monetization_type=offer.monetization_type,
-                    stream_quality=offer.presentation_type,
-                    price=int(offer.price_value) if offer.price_value else None,
-                    price_currency=offer.price_currency,
                     icon_url=str(offer.package.icon),
                 )
                 db.add(platform)
@@ -91,7 +87,11 @@ def fetch_and_store_new_movies(query: str, db: Session):
                 link = MoviePlatformLink(
                     movie=movie,
                     platform=platform,
-                    link_url=offer.url
+                    link_url=offer.url,
+                    monetization_type=offer.monetization_type,
+                    stream_quality=offer.presentation_type,
+                    price=float(offer.price_value) if offer.price_value else None,
+                    price_currency=offer.price_currency,
                 )
                 db.add(link)
                 db.flush()
@@ -104,40 +104,3 @@ def fetch_and_store_new_movies(query: str, db: Session):
 def fetch_movies_from_db(query: str, db: Session):
     query = query.strip().lower()
     return db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
-
-
-
-def fetch_and_save_movies(query: str, db: Session):
-    # search_url = f"https://www.omdbapi.com/?apikey={API_KEY}&s={query}"
-    results = search(query, "eg", 'en')
-    
-    if results:
-        # for movie in results:
-
-        #     # Check if the movie already exists in the database
-        #     existing_movie = db.query(Movie).filter(Movie.id == movie.id).first()
-        #     if existing_movie:
-        #         continue
-
-        #     # Create a new Movie instance
-        #     new_movie = Movie(
-        #         imdb_id=movie.imdb_id,
-        #         title=movie.title,
-        #         description=movie.short_description,
-        #         runtime=movie.runtime_minutes,
-        #         poster=movie.poster,
-        #         backdrops=movie.backdrops,
-        #         genres=movie.genres,
-        #         rating=movie.scoring.imdb_score,
-        #         year=movie.release_year,
-        #         interactions={
-        #             "likes": movie.interactions.likes if movie.interactions else 0,
-        #             "dislikes": movie.interactions.dislikes if movie.interactions else 0
-        #         }
-        #     )
-
-            # db.add(new_movie)
-        print(results[0])
-        return results
-        
-        # db.commit()

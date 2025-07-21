@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
 from models import Movie, Platform, ContentType, MoviePlatformLink
 from schemas import MovieOut, MovieCreate, PlatformOut
-from fetcher import fetch_and_save_movies, fetch_and_store_new_movies, fetch_movies_from_db
+from fetcher import fetch_and_store_new_movies, fetch_movies_from_db
 from typing import List
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
@@ -15,7 +15,7 @@ scheduler = BackgroundScheduler()
 def fetch_daily_movies_job():
     db = SessionLocal()
     try:
-        fetch_and_save_movies(db)
+        fetch_and_store_new_movies(db)
     except Exception as e:
         print(f"Error in scheduled job: {e}")
     finally:
@@ -55,7 +55,7 @@ def get_db():
 
 @app.get("/fetch/{query}")
 def fetch_movies(query: str, db: Session = Depends(get_db)):
-    return fetch_and_save_movies(query, db)
+    return fetch_and_store_new_movies(query, db)
     # return {'message': "Movies fetched and stored successfully"}
 
 
@@ -65,16 +65,12 @@ def fetch_movies(query: str, db: Session = Depends(get_db)):
 
 
 @app.get("/movies", response_model=List[MovieOut])
-def search_cached(query: str, db: Session = Depends(get_db)):
-    query = query.strip().lower()
-
-    db_results = db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
-
-    return db_results
+def get_movies_from_db(query: str, db: Session = Depends(get_db)):
+    return fetch_movies_from_db(query, db)
 
 
 @app.get("/movies/fresh", response_model=List[MovieOut])
-def search_fresh(query: str, db: Session = Depends(get_db)):
+def get_fresh_movies(query: str, db: Session = Depends(get_db)):
     return fetch_and_store_new_movies(query, db)
 
 
@@ -89,49 +85,6 @@ def get_movie_by_id(movie_id: int, db: Session = Depends(get_db)):
 @app.get("/platforms", response_model=List[PlatformOut])
 def get_platforms(db: Session = Depends(get_db)):
     return db.query(Platform).all()
-
-
-@app.get("/search", response_model=List[MovieOut])
-def search_movies(query: str, db: Session = Depends(get_db)):
-    return fetch_and_store_new_movies(query, db)
-
-
-@app.get("/fetch_db", response_model=List[MovieOut])
-def get_movies_from_db(query: str, db: Session = Depends(get_db)):
-    return fetch_movies_from_db(query, db)
-
-
-# @app.post("/movies", response_model=MovieOut)
-# def create_movie(movie: MovieCreate, db: Session = Depends(get_db)):
-#     db_movie = Movie(
-#         title=movie.title,
-#         description=movie.description,
-#         year=movie.year,
-#         poster=movie.poster,
-#         backdrops=movie.backdrops,
-#         runtime=movie.runtime,
-#         imdb_id=movie.imdb_id,
-#         rating=movie.rating,
-#         genres=movie.genres
-#     )
-#     db.add(db_movie)
-#     db.commit()
-#     db.refresh(db_movie)
-
-#     for p in movie.platforms:
-#         existing = (
-#             db.query(Platform).filter_by(platform_name=p.platform_name, link_url=p.link_url).first()
-#         )
-
-#         if not existing:
-#             existing = Platform(**p.dict())
-#             db.add(existing)
-#             db.flush()  # Use flush to get the id without committing
-#             db.refresh(existing)
-
-#         db_movie.platforms.append(existing)
-
-#     db.commit()
 
 
 @app.get("/movies/platforms/{platform_name}", response_model=List[MovieOut])

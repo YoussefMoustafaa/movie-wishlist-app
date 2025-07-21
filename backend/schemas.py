@@ -9,9 +9,6 @@ class ContentType(str, Enum):
 
 class PlatformBase(BaseModel):
     platform_name: str
-    monetization_type: Optional[str] = None
-    stream_quality: Optional[str] = None
-    price: Optional[int] = None
     price_currency: Optional[str] = None
     icon_url: Optional[str] = None
 
@@ -23,7 +20,7 @@ class PlatformCreate(PlatformBase):
 class PlatformOut(PlatformBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Interactions(BaseModel):
@@ -32,6 +29,9 @@ class Interactions(BaseModel):
 
 
 class MoviePlatformLinkBase(BaseModel):
+    monetization_type: Optional[str] = None
+    stream_quality: Optional[str] = None
+    price: Optional[float] = None
     link_url: str
 
 
@@ -39,7 +39,7 @@ class MoviePlatformLinkOut(MoviePlatformLinkBase):      # outputs the link with 
     id: int
     platform: PlatformOut
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class MoviePlatformLinkCreate(MoviePlatformLinkBase):
@@ -85,7 +85,7 @@ class MovieCreate(MovieBase):
 class MovieOut(MovieBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
         use_enum_values = True
 
 
@@ -94,4 +94,4 @@ class PlatformMovieLinkOut(BaseModel):
     link_url: str
     movie: MovieOut
     class Config:
-        orm_mode = True
+        from_attributes = True

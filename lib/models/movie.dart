@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:movie_wish_list/models/platform_link.dart';
 
 class Movie {

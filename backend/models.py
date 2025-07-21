@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, JSON, Table, ForeignKey, Enum, DECIMAL
+from sqlalchemy import Column, Integer, String, JSON, Table, ForeignKey, Enum, DECIMAL, Float
 from sqlalchemy.orm import relationship
 from database import Base
 import enum
@@ -35,10 +35,6 @@ class Platform(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     platform_name = Column(String)
-    monetization_type = Column(String)
-    stream_quality = Column(String)
-    price = Column(Integer)     # make it double
-    price_currency = Column(String)
     icon_url = Column(String)
 
     movie_links = relationship("MoviePlatformLink", back_populates="platform")
@@ -50,6 +46,10 @@ class MoviePlatformLink(Base):
     id = Column(Integer, primary_key=True)
     movie_id = Column(Integer, ForeignKey("movies.id"))
     platform_id = Column(Integer, ForeignKey("platforms.id"))
+    monetization_type = Column(String)
+    stream_quality = Column(String)
+    price = Column(Float)
+    price_currency = Column(String)
     link_url = Column(String)
 
     movie = relationship("Movie", back_populates="platform_links")

@@ -16,6 +16,7 @@ class Movie {
   final String poster;
   final String rating;
   final String type;
+  final Map<String, int> interactions;
   final int? numberOfSeasons;
 
   final List<String> pictures;
@@ -42,6 +43,7 @@ class Movie {
     this.numberOfSeasons,
     required this.platformLinks,
     required this.genresList,
+    required this.interactions,
   });
   
 
@@ -55,6 +57,10 @@ class Movie {
       rating: json['rating'].toString(),
       type: json['type'],
       poster: json['poster'],
+      interactions: {
+        'likes': json['interactions']['likes'] ?? 0,
+        'dislikes': json['interactions']['dislikes'] ?? 0,
+      },
       genresList: List<String>.from(json['genres'] ?? []),
       pictures: List<String>.from(json['pictures'] ?? []),
       platformLinks: (json['platform_links'] as List).map((e) => PlatformLink.fromJson(e)).toList(),

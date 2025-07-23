@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_wish_list/models/movie.dart';
 import 'package:movie_wish_list/providers/movies_provider.dart';
+import 'package:movie_wish_list/screens/movie_details.screen.dart';
 import 'package:movie_wish_list/widgets/movie_card.dart';
 
 class MovieList extends ConsumerStatefulWidget {
@@ -65,14 +66,23 @@ class _MovieListState extends ConsumerState<MovieList> {
                     itemCount: moviesState.movies.length,
                     itemBuilder: (context, index) {
                       Movie movie = moviesState.movies[index];
-                      return MovieCard(
-                        key: ValueKey(movie.id),
-                        title: movie.title,
-                        rating: movie.rating,
-                        poster: movie.poster,
-                        duration: movie.duration,
-                        categories: movie.genresList,
-                        description: movie.description,
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => MovieDetailsScreen(movie: movie))
+                          );
+                        },
+                        child: MovieCard(
+                          key: ValueKey(movie.id),
+                          title: movie.title,
+                          rating: movie.rating,
+                          poster: movie.poster,
+                          duration: movie.duration,
+                          categories: movie.genresList,
+                          description: movie.description,
+                        ),
                       );
                     },
                   ),

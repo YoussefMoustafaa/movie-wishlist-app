@@ -6,7 +6,7 @@ class MovieCard extends StatelessWidget {
     required this.title,
     required this.rating,
     required this.poster,
-    required this.duration,
+    required this.year,
     required this.categories,
     required this.description
   });
@@ -14,7 +14,7 @@ class MovieCard extends StatelessWidget {
   final String title;
   final String rating;
   final String poster;
-  final String duration;
+  final int year;
   final List<String> categories;
   final String description;
 
@@ -77,7 +77,7 @@ class MovieCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      duration,
+                      year.toString(),
                       style: const TextStyle(color: Colors.white),
                     ),
                     SizedBox(width: screenWidth * 0.018,),

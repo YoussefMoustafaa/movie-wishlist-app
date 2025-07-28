@@ -26,7 +26,6 @@ class _MovieListState extends ConsumerState<MovieList> {
         duration: const Duration(milliseconds: 500),
         child: moviesState.isLoading
             ? Center(
-                // key: const ValueKey('loading'),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -46,7 +45,6 @@ class _MovieListState extends ConsumerState<MovieList> {
               )
             : moviesState.movies.isEmpty
                 ? Center(
-                    // key: const ValueKey('empty'),
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -79,7 +77,7 @@ class _MovieListState extends ConsumerState<MovieList> {
                           title: movie.title,
                           rating: movie.rating,
                           poster: movie.poster,
-                          duration: movie.duration,
+                          year: movie.year,
                           categories: movie.genresList,
                           description: movie.description,
                         ),

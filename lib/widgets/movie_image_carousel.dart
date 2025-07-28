@@ -54,7 +54,7 @@ class _MovieImageCarouselState extends State<MovieImageCarousel> {
 
 
     return SizedBox(
-      height: screenHeight * 0.5,
+      height: screenHeight * 0.51,
       child: Stack(
         children: [
           SizedBox(
@@ -135,7 +135,7 @@ class _MovieImageCarouselState extends State<MovieImageCarousel> {
       
           // Poster and Info
           Positioned(
-            top: screenHeight * 0.25,
+            top: screenHeight * 0.26,
             left: screenWidth * 0.05,
             right: screenWidth * 0.05,
             child: Row(
@@ -192,13 +192,20 @@ class _MovieImageCarouselState extends State<MovieImageCarousel> {
                             ],
                           ),
                           SizedBox(height: screenHeight * 0.01),
-                          Text(
+                          (widget.movie.numberOfSeasons != null && widget.movie.type == "Show") ? Text(
                             '${widget.movie.type} • ${widget.movie.numberOfSeasons} Seasons',
                             style: TextStyle(
                               fontSize: screenWidth * 0.04,
                               color: Colors.white70,
+                              ),
+                            ) :
+                            Text(
+                              widget.movie.type,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.04,
+                                color: Colors.white70,
+                              ),
                             ),
-                          ),
                           SizedBox(height: screenHeight * 0.02),
                         ],
                       ),

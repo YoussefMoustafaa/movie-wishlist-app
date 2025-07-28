@@ -1,5 +1,5 @@
 import requests
-import ast
+import re
 from sqlalchemy.orm import Session
 from models import Movie, Platform, MoviePlatformLink, ContentType
 from schemas import MovieCreate
@@ -28,9 +28,13 @@ def fetch_and_store_new_movies(query: str, db: Session):
     existing_movies = db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
     existing_ids = {movie.imdb_id for movie in existing_movies}
 
-    external_movies = fetch_api_movies(query)
+    fetched_movies = fetch_api_movies(query)
 
-    for ext in external_movies:
+    for ext in fetched_movies:
+        existing = db.query(Movie).filter_by(imdb_id=ext.imdb_id).first()
+        if existing:
+            continue
+        
         if ext.imdb_id in existing_ids:
             continue
 
@@ -88,8 +92,8 @@ def fetch_and_store_new_movies(query: str, db: Session):
                     movie=movie,
                     platform=platform,
                     link_url=offer.url,
-                    monetization_type=offer.monetization_type,
-                    stream_quality=offer.presentation_type,
+                    monetization_type='Subscription' if offer.monetization_type == 'FLATRATE' else offer.monetization_type,
+                    stream_quality=re.sub(r'\W+', '', offer.presentation_type),
                     price=float(offer.price_value) if offer.price_value else None,
                     price_currency=offer.price_currency,
                 )
@@ -104,3 +108,9 @@ def fetch_and_store_new_movies(query: str, db: Session):
 def fetch_movies_from_db(query: str, db: Session):
     query = query.strip().lower()
     return db.query(Movie).filter(Movie.title.ilike(f"%{query}%")).all()
+
+
+def fetch_test(query: str, db: Session):
+    query = query.strip().lower()
+    results = search(query, "eg", "en")
+    print(results)

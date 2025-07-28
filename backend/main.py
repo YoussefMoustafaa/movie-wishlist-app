@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import Base, engine, SessionLocal
 from models import Movie, Platform, ContentType, MoviePlatformLink
 from schemas import MovieOut, MovieCreate, PlatformOut
-from fetcher import fetch_and_store_new_movies, fetch_movies_from_db
+from fetcher import fetch_and_store_new_movies, fetch_movies_from_db, fetch_test
 from typing import List
 from apscheduler.schedulers.background import BackgroundScheduler
 from contextlib import asynccontextmanager
@@ -95,3 +95,8 @@ def get_movies_by_platform(platform_name : str, db : Session = Depends(get_db)):
         .filter(Platform.platform_name == platform_name)
         .all()
     )
+
+
+@app.get("/movies/test/")
+def test_fetch_movies(query: str, db: Session = Depends(get_db)):
+    return fetch_test(query, db)

@@ -3,7 +3,7 @@ import 'package:movie_wish_list/models/platform_link.dart';
 class Movie {
   final String id;
   final String title;
-  final String year;
+  final int year;
   final String duration;
   final String? genre;
   final String? director;
@@ -48,10 +48,31 @@ class Movie {
   
 
   factory Movie.fromJson(Map<String, dynamic> json) {
+    const genreMap = {
+    'crm': 'Crime',
+    'drm': 'Drama',
+    'ani': 'Animation',
+    'act': 'Action',
+    'cmy': 'Comedy',
+    'rma': 'Romance',
+    'trl': 'Thriller',
+    'adv': 'Adventure',
+    'scf': 'Sci-Fi',
+    'hrr': 'Horror',
+    'hst': 'History',
+    'mys': 'Mystery',
+    'doc': 'Documentary',
+    'fnt': 'Fantasy',
+    'eur': 'European',
+    'msc': 'Music',
+    'fml': 'Family',
+  };
+  final genreCodes = List<String>.from(json['genres'] ?? []);
+  final fullGenres = genreCodes.map((code) => genreMap[code] ?? code).toList();
     return Movie(
       id: json['id'].toString(),
       title: json['title'],
-      year: json['year'].toString(),
+      year: json['year'],
       duration: json['runtime'].toString(),
       description: json['description'],
       rating: json['rating'].toString(),
@@ -61,7 +82,8 @@ class Movie {
         'likes': json['interactions']['likes'] ?? 0,
         'dislikes': json['interactions']['dislikes'] ?? 0,
       },
-      genresList: List<String>.from(json['genres'] ?? []),
+      numberOfSeasons: json['number_of_seasons'],
+      genresList: fullGenres,
       pictures: List<String>.from(json['pictures'] ?? []),
       platformLinks: (json['platform_links'] as List).map((e) => PlatformLink.fromJson(e)).toList(),
     );

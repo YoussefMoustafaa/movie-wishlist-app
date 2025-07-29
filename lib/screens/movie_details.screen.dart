@@ -77,24 +77,7 @@ class MovieDetailsScreen extends StatelessWidget {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: screenHeight * 0.02),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: movie.genresList.map((genre) {
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
-                      child: Chip(
-                        labelPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
-                        label: Text(
-                          genre,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.blue[900],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              )
+              child: buildGenreChip(movie.genresList, context),
             ),
             Padding(
               padding: EdgeInsets.only(top: screenHeight * 0.02, left: screenWidth * 0.03, bottom: screenHeight * 0.01),
@@ -176,4 +159,26 @@ class MovieDetailsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget buildGenreChip(List<String> genres, BuildContext context) {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      children: genres.map((genre) {
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
+          child: Chip(
+            labelPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+            label: Text(
+              genre,
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.blue[900],
+          ),
+        );
+      }).toList(),
+    ),
+  );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_wish_list/widgets/custom_search_bar.dart';
+import 'package:movie_wish_list/widgets/movie_search_bar.dart';
 import 'package:movie_wish_list/widgets/movie_list.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -53,7 +53,7 @@ class HomeScreen extends ConsumerWidget {
                 Positioned(
                   bottom: screenHeight * 0.01,
                   left: screenWidth * 0.05,
-                  child: MovieSearchBar()
+                  child: const MovieSearchBar()
                 )
               ],
             ),

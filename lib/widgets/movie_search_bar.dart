@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_wish_list/providers/movies_provider.dart';
+import 'package:movie_wish_list/utilities/debouncer.dart';
 
 class MovieSearchBar extends ConsumerStatefulWidget {
 
@@ -18,6 +19,7 @@ class MovieSearchBar extends ConsumerStatefulWidget {
 class _MovieSearchBarState extends ConsumerState<MovieSearchBar> {
 
   final TextEditingController _controller = TextEditingController();
+  final _debouncer = Debouncer(delay: const Duration(milliseconds: 500));
 
   @override
   void initState() {
@@ -26,7 +28,9 @@ class _MovieSearchBarState extends ConsumerState<MovieSearchBar> {
     _controller.addListener(() {
       final query = _controller.text;
       if (query.isNotEmpty) {
-        ref.read(movieNotifierProvider.notifier).fetchMovies(query);
+        _debouncer.run(() {
+          ref.read(movieNotifierProvider.notifier).fetchMovies(query);
+        });
       }
     });
   }
@@ -52,7 +56,9 @@ class _MovieSearchBarState extends ConsumerState<MovieSearchBar> {
           )
         );
       } else {
-        ref.read(movieNotifierProvider.notifier).fetchMovies(query);
+        _debouncer.run(() {
+          ref.read(movieNotifierProvider.notifier).fetchMovies(query);
+        });
       }
     }
 
